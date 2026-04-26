@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">   
+    <title>AIROS.CC - AI操作系统云平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            /* 极光渐变流动背景 */
+            background: linear-gradient(125deg, #0f0c29 0%, #302b63 25%, #24243e 50%, #1a1a2e 75%, #0f0c29 100%);
+            background-size: 400% 400%;
+            animation: auroraFlow 20s ease infinite;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        @keyframes auroraFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* 极光光带背景 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 50% 50%, 
+                rgba(138, 43, 226, 0.15) 0%, 
+                rgba(65, 105, 225, 0.1) 25%, 
+                rgba(0, 255, 255, 0.08) 50%, 
+                transparent 70%);
+            animation: auroraRotate 30s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        @keyframes auroraRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 流动光点 */
+        .light-point {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8a2be2, #4169e1, #00ffff);
+            animation: lightFloat 8s infinite ease-in-out;
+            z-index: 0;
+            pointer-events: none;
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.6);
+        }
+        
+        @keyframes lightFloat {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(100px); opacity: 0; }
+        }
+        
+        /* 导航栏 */
+        .navbar {
+            background: rgba(15, 12, 41, 0.88);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(138, 43, 226, 0.18);
+            padding: 1rem 5%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 35px rgba(138, 43, 226, 0.12);
+        }
+        
+        .nav-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.6rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #8a2be2 0%, #4169e1 50%, #00ffff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 25px rgba(138, 43, 226, 0.5);
+            letter-spacing: 3px;
+        }
+        
+        .nav-links a {
+            margin-left: 2.2rem;
+            text-decoration: none;
+            color: #e8e4ff;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 0;
+            height: 2.5px;
+            background: linear-gradient(90deg, #8a2be2, #4169e1, #00ffff);
+            transition: width 0.3s;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .nav-links a:hover {
+            color: #00ffff;
+            text-shadow: 0 0 12px rgba(0, 255, 255, 0.6);
+        }
+        
+        /* 头部展示区 */
+        .hero {
+            padding: 9.5rem 5% 5.5rem;
+            text-align: center;
+            color: white;
+            max-width: 1600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .domain-name {
+            font-size: 6rem;
+            font-weight: bold;
+            margin-bottom: 1.8rem;
+            background: linear-gradient(135deg, #8a2be2 0%, #4169e1 35%, #00ffff 70%, #8a2be2 100%);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 5s ease infinite, fadeInUp 1s ease, auroraGlow 3s ease-in-out infinite;
+            letter-spacing: 5px;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes auroraGlow {
+            0%, 100% { filter: drop-shadow(0 0 25px rgba(138, 43, 226, 0.4)); }
+            50% { filter: drop-shadow(0 0 45px rgba(0, 255, 255, 0.7)); }
+        }
+        
+        .domain-tagline {
+            font-size: 1.7rem;
+            margin-bottom: 3rem;
+            opacity: 0.95;
+            color: #e8e4ff;
+            animation: fadeInUp 1.3s ease;
+            letter-spacing: 1.5px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 1.4rem 4rem;
+            background: linear-gradient(135deg, #8a2be2 0%, #4169e1 50%, #00ffff 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 5s ease infinite;
+            color: #0f0c29;
+            text-decoration: none;
+            border-radius: 70px;
+            font-weight: bold;
+            font-size: 1.25rem;
+            transition: all 0.3s;
+            box-shadow: 0 0 40px rgba(138, 43, 226, 0.5), inset 0 0 25px rgba(255, 255, 255, 0.25);
+            animation: fadeInUp 1.5s ease, buttonAurora 2.5s ease-in-out infinite;
+            border: 2.5px solid rgba(138, 43, 226, 0.35);
+        }
+        
+        @keyframes buttonAurora {
+            0%, 100% { box-shadow: 0 0 40px rgba(138, 43, 226, 0.5), inset 0 0 25px rgba(255, 255, 255, 0.25); }
+            50% { box-shadow: 0 0 60px rgba(0, 255, 255, 0.8), inset 0 0 35px rgba(255, 255, 255, 0.4); }
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 0 60px rgba(0, 255, 255, 0.8), inset 0 0 35px rgba(255, 255, 255, 0.4);
+        }
+        
+        /* 通用模块样式 */
+        .section {
+            padding: 5.5rem 5%;
+            max-width: 1800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 3.4rem;
+            margin-bottom: 4rem;
+            background: linear-gradient(135deg, #8a2be2 0%, #4169e1 50%, #00ffff 100%);
+            background-size: 300% 300%;
+            animation: gradientShift 5s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 25px rgba(138, 43, 226, 0.35);
+            letter-spacing: 2.5px;
+        }
+        
+        /* 单排宽屏网格布局 */
+        .meanings-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2.8rem;
+            width: 100%;
+        }
+        
+        .meaning-card {
+            background: rgba(15, 12, 41, 0.65);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(138, 43, 226, 0.22);
+            padding: 3.2rem;
+            border-radius: 22px;
+            transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .meaning-card::before {
+            content: '';
+            position: absolute;
+            top: -60%;
+            left: -60%;
+            width: 260%;
+            height: 260%;
+            background: radial-gradient(circle, rgba(138, 43, 226, 0.12) 0%, transparent 65%);
+            opacity: 0;
+            transition: opacity 0.45s;
+        }
+        
+        .meaning-card:hover::before {
+            opacity: 1;
+        }
+        
+        .meaning-card:hover {
+            transform: translateY(-14px) scale(1.03);
+            border-color: rgba(0, 255, 255, 0.65);
+            box-shadow: 0 18px 45px rgba(138, 43, 226, 0.28), inset 0 0 35px rgba(0, 255, 255, 0.12);
+        }
+        
+        .meaning-icon {
+            font-size: 4.2rem;
+            margin-bottom: 1.4rem;
+            filter: drop-shadow(0 0 18px rgba(138, 43, 226, 0.55));
+        }
+        
+        .meaning-title {
+            font-size: 1.55rem;
+            font-weight: bold;
+            margin-bottom: 0.9rem;
+            background: linear-gradient(135deg, #8a2be2 0%, #4169e1 50%, #00ffff 100%);
+            background-size: 300% 300%;
+            animation: gradientShift 5s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .meaning-desc {
+            color: #e8e4ff;
+            line-height: 2;
+            font-size: 1.08rem;
+            opacity: 0.92;
+        }
+        
+        /* 应用场景区 */
+        .scenarios {
+            background: rgba(138, 43, 226, 0.035);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(138, 43, 226, 0.14);
+            border-radius: 28px;
+            padding: 4rem;
+            margin: 2.5rem auto;
+            max-width: 1700px;
+            box-shadow: 0 12px 55px rgba(138, 43, 226, 0.09);
+        }
+        
+        .scenario-list {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2.8rem;
+            width: 100%;
+        }
+        
+        .scenario-item {
+            background: rgba(15, 12, 41, 0.65);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(138, 43, 226, 0.22);
+            padding: 2.8rem;
+            border-radius: 18px;
+            text-align: center;
+            transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .scenario-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3.5px;
+            background: linear-gradient(90deg, #8a2be2, #4169e1, #00ffff);
+            transform: scaleX(0);
+            transition: transform 0.45s;
+        }
+        
+        .scenario-item:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .scenario-item:hover {
+            transform: translateY(-10px) scale(1.04);
+            border-color: rgba(0, 255, 255, 0.65);
+            box-shadow: 0 15px 40px rgba(138, 43, 226, 0.28);
+        }
+        
+        .scenario-icon {
+            font-size: 3.4rem;
+            margin-bottom: 1.4rem;
+            filter: drop-shadow(0 0 15px rgba(138, 43, 226, 0.48));
+        }
+        
+        .scenario-name {
+            font-weight: bold;
+            background: linear-gradient(135deg, #8a2be2 0%, #4169e1 50%, #00ffff 100%);
+            background-size: 300% 300%;
+            animation: gradientShift 5s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.7rem;
+            font-size: 1.3rem;
+        }
+        
+        .scenario-item p {
+            color: #e8e4ff;
+            opacity: 0.88;
+            font-size: 0.98rem;
+        }
+        
+        /* 价值优势区 */
+        .advantages {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2.8rem;
+            margin-top: 3rem;
+            width: 100%;
+        }
+        
+        .advantage-item {
+            text-align: center;
+            background: rgba(15, 12, 41, 0.65);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(138, 43, 226, 0.22);
+            padding: 3.2rem;
+            border-radius: 22px;
+            transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .advantage-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3.5px;
+            background: linear-gradient(90deg, #8a2be2, #4169e1, #00ffff);
+            transform: scaleX(0);
+            transition: transform 0.45s;
+        }
+        
+        .advantage-item:hover::after {
+            transform: scaleX(1);
+        }
+        
+        .advantage-item:hover {
+            transform: translateY(-14px) scale(1.03);
+            border-color: rgba(0, 255, 255, 0.65);
+            box-shadow: 0 18px 45px rgba(138, 43, 226, 0.28);
+        }
+        
+        .advantage-number {
+            font-size: 4.2rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #8a2be2 0%, #4169e1 50%, #00ffff 100%);
+            background-size: 300% 300%;
+            animation: gradientShift 5s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.4rem;
+            filter: drop-shadow(0 0 22px rgba(138, 43, 226, 0.45));
+        }
+        
+        .advantage-text {
+            font-weight: bold;
+            background: linear-gradient(135deg, #8a2be2 0%, #4169e1 50%, #00ffff 100%);
+            background-size: 300% 300%;
+            animation: gradientShift 5s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.35rem;
+            margin-bottom: 0.7rem;
+        }
+        
+        .advantage-item p {
+            color: #e8e4ff;
+            opacity: 0.88;
+            font-size: 0.98rem;
+        }
+        
+        /* 联系我们区 */
+        .contact {
+            background: rgba(15, 12, 41, 0.75);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(138, 43, 226, 0.28);
+            padding: 5.5rem;
+            border-radius: 35px;
+            text-align: center;
+            box-shadow: 0 18px 65px rgba(138, 43, 226, 0.18), inset 0 0 55px rgba(138, 43, 226, 0.06);
+            max-width: 1350px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .contact::before {
+            content: '';
+            position: absolute;
+            top: -60%;
+            left: -60%;
+            width: 260%;
+            height: 260%;
+            background: radial-gradient(circle, rgba(138, 43, 226, 0.09) 0%, transparent 58%);
+            animation: rotate 25s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .contact .section-title {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .contact p {
+            font-size: 1.3rem;
+            color: #e8e4ff;
+            opacity: 0.92;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .contact-info {
+            margin: 3rem 0;
+            display: flex;
+            justify-content: space-around;
+            max-width: 950px;
+            margin: 3rem auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .contact-item {
+            font-size: 1.4rem;
+            color: #e8e4ff;
+            padding: 1.2rem 2.4rem;
+            background: rgba(15, 12, 41, 0.55);
+            border-radius: 14px;
+            border: 1px solid rgba(138, 43, 226, 0.18);
+        }
+        
+        .contact-label {
+            font-weight: bold;
+            background: linear-gradient(135deg, #8a2be2 0%, #4169e1 50%, #00ffff 100%);
+            background-size: 300% 300%;
+            animation: gradientShift 5s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            padding: 3.5rem;
+            color: #e8e4ff;
+            opacity: 0.68;
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid rgba(138, 43, 226, 0.12);
+            margin-top: 3.5rem;
+        }
+        
+        /* 动画 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(45px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* 响应式适配 */
+        @media (max-width: 1200px) {
+            .meanings-grid, .scenario-list, .advantages {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .meanings-grid, .scenario-list, .advantages {
+                grid-template-columns: 1fr;
+            }
+            
+            .domain-name {
+                font-size: 3.8rem;
+                letter-spacing: 3px;
+            }
+            
+            .domain-tagline {
+                font-size: 1.3rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .section-title {
+                font-size: 2.4rem;
+            }
+            
+            .contact {
+                padding: 3.5rem 2.5rem;
+            }
+            
+            .contact-info {
+                flex-direction: column;
+                gap: 1.4rem;
+            }
+        }
+    </style>
+
+
+    
+    <div class="light-point" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="light-point" style="left: 25%; animation-delay: 2s;"></div>
+    <div class="light-point" style="left: 40%; animation-delay: 4s;"></div>
+    <div class="light-point" style="left: 55%; animation-delay: 1s;"></div>
+    <div class="light-point" style="left: 70%; animation-delay: 3s;"></div>
+    <div class="light-point" style="left: 85%; animation-delay: 5s;"></div>
+
+    
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">AIROS.CC</div>
+            <div class="nav-links">
+                <a href="#meanings">含义解读</a>
+                <a href="#scenarios">应用场景</a>
+                <a href="#advantages">价值优势</a>
+                <a href="#contact">联系我们</a>
+            </div>
+        </div>
+    </nav>
+
+    
+    <section class="hero">
+        <div class="domain-name">AIROS.CC</div>
+        <div class="domain-tagline">AI操作系统 · 云端智能中枢 · 分布式AI调度 · 跨平台AI框架</div>
+        <a href="#contact" class="cta-button">立即咨询</a>
+    </section>
+
+    
+    <section class="section" id="meanings">
+        <h2 class="section-title">AIROS 多重专业释义</h2>
+        <div class="meanings-grid">
+            <div class="meaning-card">
+                <div class="meaning-icon">🖥️</div>
+                <div class="meaning-title">AI Operating System</div>
+                <div class="meaning-desc">AI原生操作系统，为人工智能应用提供底层运行环境与资源调度能力</div>
+            </div>
+            <div class="meaning-card">
+                <div class="meaning-icon">☁️</div>
+                <div class="meaning-title">AI Cloud OS</div>
+                <div class="meaning-desc">云端AI操作系统，提供弹性算力调度、模型部署与多租户隔离的云服务</div>
+            </div>
+            <div class="meaning-card">
+                <div class="meaning-icon">🔗</div>
+                <div class="meaning-title">AI Resource Orchestrator</div>
+                <div class="meaning-desc">AI资源编排系统，智能管理GPU/TPU算力、存储与网络资源</div>
+            </div>
+            <div class="meaning-card">
+                <div class="meaning-icon">🌐</div>
+                <div class="meaning-title">AI Runtime Environment</div>
+                <div class="meaning-desc">AI运行时环境，支持多框架模型推理、训练与跨平台部署</div>
+            </div>
+        </div>
+    </section>
+
+    
+    <section class="section" id="scenarios">
+        <h2 class="section-title">核心应用场景</h2>
+        <div class="scenarios">
+            <div class="scenario-list">
+                <div class="scenario-item">
+                    <div class="scenario-icon">🏢</div>
+                    <div class="scenario-name">企业AI平台</div>
+                    <p>统一AI开发、部署、运维的一站式平台</p>
+                </div>
+                <div class="scenario-item">
+                    <div class="scenario-icon">📱</div>
+                    <div class="scenario-name">边缘AI部署</div>
+                    <p>轻量化AI模型在终端设备的运行环境</p>
+                </div>
+                <div class="scenario-item">
+                    <div class="scenario-icon">🏭</div>
+                    <div class="scenario-name">工业AI系统</div>
+                    <p>智能制造场景的AI模型管理与调度</p>
+                </div>
+                <div class="scenario-item">
+                    <div class="scenario-icon">🎮</div>
+                    <div class="scenario-name">游戏AI引擎</div>
+                    <p>游戏NPC智能行为与场景生成的AI框架</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+    <section class="section" id="advantages">
+        <h2 class="section-title">域名核心价值</h2>
+        <div class="advantages">
+            <div class="advantage-item">
+                <div class="advantage-number">6</div>
+                <div class="advantage-text">字符长度</div>
+                <p>极简易记，品牌传播成本低</p>
+            </div>
+            <div class="advantage-item">
+                <div class="advantage-number">4</div>
+                <div class="advantage-text">专业释义</div>
+                <p>覆盖操作系统/云端/编排/运行时四大场景</p>
+            </div>
+            <div class="advantage-item">
+                <div class="advantage-number">万亿级</div>
+                <div class="advantage-text">市场规模</div>
+                <p>AI操作系统是AI基础设施核心赛道</p>
+            </div>
+            <div class="advantage-item">
+                <div class="advantage-number">.CC</div>
+                <div class="advantage-text">国际后缀</div>
+                <p>简洁易记，国际化认可度高</p>
+            </div>
+        </div>
+    </section>
+
+    
+    <section class="section" id="contact">
+        <div class="contact">
+            <h2 class="section-title">联系我们</h2>
+            <p>如果您对这个优质AI操作系统域名感兴趣，欢迎随时联系</p>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <span class="contact-label">邮箱：</span>
+                    <a href="mailto:ai@altoai.cn" style="text-decoration: none">
+<font color="#FFFFFF">ai@altoai.cn</font></a>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-label">微信：</span>
+                    <span>altoai</span>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-label">QQ：</span>
+                    <span>31391890</span>
+                </div>
+            </div>
+            <a href="mailto:ai@altoai.cn" class="cta-button">发送邮件咨询</a>
+        </div>
+    </section>
+
+    
+    <footer class="footer">
+        <p>© 2026 <a target="_blank" href="http://altoai.cn/blog" style="text-decoration: none">
+<font color="#e8e4ff">ALTOAI.CN</font></a> 版权所有 | AI操作系统云平台域名</p>
+        <p style="margin-top: 1.2rem; font-size: 0.92rem;">本页面仅用于域名展示，不构成任何商业承诺</p>
+    </footer>
+<script>
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.background = 'rgba(42, 26, 10, 0.98)';
+                navbar.style.borderBottom = '1px solid rgba(255, 200, 50, 0.3)';
+            } else {
+                navbar.style.background = 'rgba(42, 26, 10, 0.95)';
+                navbar.style.borderBottom = '1px solid rgba(255, 200, 50, 0.2)';
+            }
+        });
+    </script>
+</body>    </body><body oncontextmenu="return false" onselectstart="return false" ondragstart="return false" onbeforecopy="return false" oncopy=document.selection.empty() onselect=document.selection.empty()>
+</html>
+    
